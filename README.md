@@ -10,3 +10,8 @@
 1. mesa_money_model.py: 主模型
 2. money_model.nlogo: 用来绘图的NetLogo模型
 3. NL.py: pyNetLogo的包装，提供方便的函数
+
+## conda环境
+```
+conda env create --file environment.yml
+```

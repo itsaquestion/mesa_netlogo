@@ -1,0 +1,16 @@
+name: abm
+channels:
+  - conda-forge
+  - default
+dependencies:
+  - python=3.7
+  - pip
+  - numpy
+  - pandas
+  - numba
+  - matplotlib
+  - seaborn
+  - mesa
+  - jpype1 # for pynetlogo
+  - pip:
+      - pynetlogo

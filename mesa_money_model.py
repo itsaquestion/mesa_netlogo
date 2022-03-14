@@ -4,7 +4,7 @@ mesa的财富分配模型 + netlogo作为控制和绘图界面
 """
 import time
 
-import numba
+# import numba
 from mesa import Agent, Model
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
