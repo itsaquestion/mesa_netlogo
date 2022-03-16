@@ -9,12 +9,13 @@ import random
 from matplotlib import pyplot as plt
 import seaborn as sns
 
+import matplotlib as mpl
+
 from TicToc import tic, toc
 import pandas as pd
-import numpy as np
 
 sns.set()
-
+mpl.rcParams['figure.dpi'] = 300
 # %%
 num = 500
 steps = 500
@@ -51,6 +52,15 @@ def one_of(x=None) -> Agent:
 
 
 def setup():
+    global agent_list
+    agent_list = []
+
+    global agent_list_steps
+    agent_list_steps = []
+
+    global data
+    data = []
+
     for i in range(num):
         a = Agent(i, round(random.random(), 2))
         agent_list.append(a)
@@ -82,9 +92,10 @@ toc()
 # %%
 data_df = pd.concat(data)
 data_df.sort_values(['step', 'id'], inplace=True)
-print(data_df)
+# print(data_df)
 
 # %%
+
 
 y = data_df.query(f'step == {max(data_df.step)}').opinion
 

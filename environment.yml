@@ -11,6 +11,7 @@ dependencies:
   - matplotlib
   - seaborn
   - mesa
+  - ipython
   - jpype1 # for pynetlogo
   - pip:
       - pynetlogo
