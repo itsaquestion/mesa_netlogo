@@ -42,37 +42,37 @@ class OpAgent(Agent):
     model: Model
     opinion: float
 
-    def __post_init__(self):
-        super().__init__(self.unique_id, self.model)
-
-        self.opinion = stdlize(self.opinion)
+    # def __post_init__(self):
+    #     super().__init__(self.unique_id, self.model)
+    #
+    #     self.opinion = stdlize(self.opinion)
 
     def step(self):
-        other_agent = one_of(self.model)
-
-        diff = self.opinion - other_agent.opinion
 
         if random.random() < self.model.trembling:
             self.opinion = random.random()
         else:
+            other_agent = one_of(self.model)
+
+            diff = self.opinion - other_agent.opinion
             # 如果观点足够接近，则相互吸引
             if abs(diff) < self.model.epsilon:
                 self.opinion = (self.opinion + other_agent.opinion) / 2
 
-        self.opinion = stdlize(self.opinion)
+        # self.opinion = stdlize(self.opinion)
 
 
 @dataclass
 class OpModel(Model):
     num_agents: int
     epsilon: float
-    trembling: float = 0.005
+    trembling: float = 0.001
 
     def __post_init__(self):
         self.schedule = RandomActivation(self)
 
         for i in range(self.num_agents):
-            a = OpAgent(i, self, opinion=round(random.random(),2))
+            a = OpAgent(i, self, opinion=round(random.random(), 2))
 
             self.schedule.add(a)
 
@@ -90,7 +90,7 @@ class OpModel(Model):
 num = 500
 steps = 500
 
-model = OpModel(num, epsilon=0.2)
+model = OpModel(num, epsilon=0.1, trembling=0.01)
 
 tic()
 for i in range(steps):
@@ -98,15 +98,15 @@ for i in range(steps):
     model.step()
 toc()
 
-x = model.datacollector.get_agent_vars_dataframe()
+# x = model.datacollector.get_agent_vars_dataframe()
 # print(x.head())
 
 # %%
 
-df = x.reset_index()
-y = df[df['Step'] == max(df['Step'])]
-
-y.opinion.plot.hist(bins=100)
-plt.show()
-
-print(np.unique(round(y.opinion, 2)))
+# df = x.reset_index()
+# y = df[df['Step'] == max(df['Step'])]
+#
+# y.opinion.plot.hist(bins=100)
+# plt.show()
+#
+# print(np.unique(round(y.opinion, 2)))
