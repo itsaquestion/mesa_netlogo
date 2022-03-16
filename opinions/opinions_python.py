@@ -17,24 +17,60 @@ import pandas as pd
 sns.set()
 mpl.rcParams['figure.dpi'] = 300
 # %%
-num = 500
-steps = 500
-
-epsilon: float = 0.1
+num: int
+steps: int
+epsilon: float
+trembling: float
 
 agent_list = []
-
 agent_list_steps = []
-
-trembling = 0.001
-
 data = []
 
 
-@dataclass
+def collect_data(i: int):
+    agent_list_steps.append(agent_list.copy())
+    step_data = pd.DataFrame(agent_list)
+    step_data['tick'] = i
+    data.append(step_data)
+
+
+def clear_all():
+    global agent_list
+    global agent_list_steps
+    global data
+
+    agent_list_steps = []
+    agent_list = []
+    data = []
+
+
+@dataclass()
 class Agent:
     id: int
-    opinion: float
+
+    def init(self):
+        pass
+
+    def step(self):
+        pass
+
+    def __post_init__(self):
+        self.init()
+
+
+def one_of(x=None):
+    if x is None:
+        x = agent_list
+    return random.choice(x)
+
+
+@dataclass
+class OpAgent(Agent):
+    id: int
+    opinion: float = 0
+
+    def init(self):
+        self.opinion = random.random()
 
     def step(self):
         if random.random() < trembling:
@@ -45,60 +81,40 @@ class Agent:
                 self.opinion = (self.opinion + other_op) / 2
 
 
-def one_of(x=None) -> Agent:
-    if x is None:
-        x = agent_list
-    return random.choice(x)
-
-
 def setup():
-    global agent_list
-    agent_list = []
-
-    global agent_list_steps
-    agent_list_steps = []
-
-    global data
-    data = []
+    clear_all()
 
     for i in range(num):
-        a = Agent(i, round(random.random(), 2))
-        agent_list.append(a)
+        agent = OpAgent(i)
+        agent_list.append(agent)
 
 
-def go():
-    for i in range(steps):
-
-        agent_list_steps.append(agent_list.copy())
-
+def go(ticks):
+    for i in range(ticks):
         random.shuffle(agent_list)
-
-        step_data = pd.DataFrame(agent_list)
-        # step_data.sort_values('id', inplace=True)
-        step_data['step'] = i
-        data.append(step_data)
+        # collect_data(i)
 
         for agent in agent_list:
             agent.step()
 
 
 # %%
+num = 500
+steps = 500
+
+epsilon = 0.1
+trembling = 0.001
+
 setup()
 
 tic()
-go()
+go(steps)
 toc()
+
 
 # %%
 data_df = pd.concat(data)
-data_df.sort_values(['step', 'id'], inplace=True)
-# print(data_df)
 
-# %%
-
-
-y = data_df.query(f'step == {max(data_df.step)}').opinion
-
+y = data_df.query(f'tick == {max(data_df.tick)}').opinion
 plt.hist(y, 100)
-
 plt.show()
