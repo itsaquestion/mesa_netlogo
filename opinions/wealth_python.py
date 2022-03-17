@@ -19,8 +19,8 @@ mpl.rcParams['figure.dpi'] = 300
 # %%
 num: int
 steps: int
-epsilon: float
-trembling: float
+# epsilon: float
+# trembling: float
 
 agent_list = []
 agent_list_steps = []
@@ -28,10 +28,10 @@ data = []
 ticks = 0
 
 
-def collect_data(i: int):
+def collect_data():
     agent_list_steps.append(agent_list.copy())
     step_data = pd.DataFrame(agent_list)
-    step_data['tick'] = i
+    step_data['tick'] = ticks
     data.append(step_data)
 
 
@@ -68,28 +68,28 @@ def one_of(x=None):
 
 
 @dataclass
-class OpAgent(Agent):
+class WeAgent(Agent):
     id: int
-    opinion: float = 0
+    wealth: int = 1
 
     def init(self):
-        self.opinion = random.random()
+        pass
 
     def step(self):
-        if random.random() < trembling:
-            self.opinion = random.random()
-        else:
-            other_op = one_of().opinion
-            if abs(self.opinion - other_op) < epsilon:
-                self.opinion = (self.opinion + other_op) / 2
+        if self.wealth >= 1:
+            other_agent = one_of()
+            other_agent.wealth += 1
+            self.wealth -= 1
 
 
 def setup():
     clear_all()
 
     for i in range(num):
-        agent = OpAgent(i)
+        agent = WeAgent(i)
         agent_list.append(agent)
+
+    collect_data()
 
 
 def tick():
@@ -105,15 +105,15 @@ def go(steps):
         for agent in agent_list:
             agent.step()
 
-        collect_data(ticks)
+        collect_data()
 
 
 # %%
 num = 500
 steps = 500
 
-epsilon = 0.1
-trembling = 0.001
+# epsilon = 0.1
+# trembling = 0.001
 
 setup()
 
@@ -124,6 +124,9 @@ toc()
 # %%
 data_df = pd.concat(data)
 
-y = data_df.query(f'tick == {max(data_df.tick)}').opinion
-plt.hist(y, 100)
+y = data_df.query(f'tick == {max(data_df.tick)}').wealth
+plt.hist(y, 7)
 plt.show()
+
+# %%
+data_df
