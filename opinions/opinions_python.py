@@ -22,21 +22,21 @@ steps: int
 epsilon: float
 trembling: float
 
-agent_list = []
+agents = []
 agent_list_steps = []
 data = []
 ticks = 0
 
 
 def collect_data(i: int):
-    agent_list_steps.append(agent_list.copy())
-    step_data = pd.DataFrame(agent_list)
+    agent_list_steps.append(agents.copy())
+    step_data = pd.DataFrame(agents)
     step_data['tick'] = i
     data.append(step_data)
 
 
 def clear_all():
-    global agent_list
+    global agents
     global agent_list_steps
     global data
     global ticks
@@ -63,7 +63,7 @@ class Agent:
 
 def one_of(x=None):
     if x is None:
-        x = agent_list
+        x = agents
     return random.choice(x)
 
 
@@ -89,7 +89,7 @@ def setup():
 
     for i in range(num):
         agent = OpAgent(i)
-        agent_list.append(agent)
+        agents.append(agent)
 
 
 def tick():
@@ -101,8 +101,8 @@ def go(steps):
     for i in range(steps):
         tick()
 
-        random.shuffle(agent_list)
-        for agent in agent_list:
+        random.shuffle(agents)
+        for agent in agents:
             agent.step()
 
         collect_data(ticks)
